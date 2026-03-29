@@ -93,7 +93,7 @@ buildNumber.properties
 # NPM
 node_modules/
 yarn.lock
-
+*.ex.md
 # Webpack
 build/
 dist/

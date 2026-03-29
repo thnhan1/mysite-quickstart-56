@@ -1,5 +1,5 @@
 {
   "scripts": [
-    "create service user mysite-service-user\n\nset ACL for mysite-service-user\n allow jcr:read on /content/\nend"
+    "create service user mysiteServiceUser\n\nset ACL for mysiteServiceUser\n    allow jcr:read on /content/mysite\nend"
   ]
 }

@@ -15,14 +15,14 @@
  */
 package com.mysite.core.listeners;
 
-import java.util.List;
-
 import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChangeListener;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.propertytypes.ServiceDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * A service to demonstrate how changes in the resource tree
@@ -40,10 +40,10 @@ public class SimpleResourceListener implements ResourceChangeListener {
 
     @Override
     public void onChange(List<ResourceChange> changes) {
-        changes.forEach(change -> {
+     /*   changes.forEach(change -> {
             logger.debug("Resource event: {} at: {} isExternal", change.getType(), change.getPath(), change.isExternal());
         });
-        
+        */
     }
 }
 
