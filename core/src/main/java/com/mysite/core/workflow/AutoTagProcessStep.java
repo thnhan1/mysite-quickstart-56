@@ -5,14 +5,23 @@ import com.adobe.granite.workflow.WorkflowSession;
 import com.adobe.granite.workflow.exec.WorkItem;
 import com.adobe.granite.workflow.exec.WorkflowProcess;
 import com.adobe.granite.workflow.metadata.MetaDataMap;
+import com.day.cq.tagging.Tag;
+import com.day.cq.tagging.TagManager;
+import org.apache.sling.api.resource.*;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 
+/**
+ * Thêm cq:tags vào page
+ */
 @Component(
         service = WorkflowProcess.class,
         property = {
@@ -20,140 +29,93 @@ import javax.jcr.Session;
         }
 )
 public class AutoTagProcessStep implements WorkflowProcess {
+
     private static final Logger log = LoggerFactory.getLogger(AutoTagProcessStep.class);
-    private static final String JCR_TITLE = com.day.cq.commons.jcr.JcrConstants.JCR_TITLE;
-    private static final String JCR_CONTENT = "/jcr:content";
+
+    @Reference
+    ResourceResolverFactory resolverFactory;
 
     @Override
     public void execute(WorkItem workItem,
                         WorkflowSession workflowSession,
                         MetaDataMap metaDataMap) throws WorkflowException {
 
+        // 0. Validate payload type
         String payloadType = workItem.getWorkflowData().getPayloadType();
         if (!"JCR_PATH".equals(payloadType)) {
-            log.warn("Unsupported payload type: {}", payloadType);
+            log.warn("Unsupported payload type: {}.", payloadType);
             return;
         }
 
+        // 1. get payload path + args
         String payloadPath = workItem.getWorkflowData().getPayload().toString();
-        log.info("Xu ly payload: {}", payloadPath);
+        log.info("Processing payload: {}", payloadPath);
+        String tagNamespace = metaDataMap.get("PROCESS_ARGS", "mysite:");
 
+        // 3. Lay Session tu WorkflowSession
         Session session = workflowSession.adaptTo(Session.class);
         if (session == null) {
-            throw new WorkflowException("Cannot obtain JCR Session");
+            throw new WorkflowException("Can not obtain JCR session");
         }
 
-        try {
-            String jcrContentPath = payloadPath + JCR_CONTENT;
-            if (!session.nodeExists(jcrContentPath)) {
+        // 4. Wrap ResourceResolver tu Sesison
+        Map<String, Object> param = Collections.singletonMap("user.jcr.session",
+                session);
+        try (ResourceResolver resolver = resolverFactory.getResourceResolver(param)) {
+
+            // 5. Get jcr:content resource
+            Resource contentResource = resolver.getResource(payloadPath + "/jcr:content");
+            if (contentResource == null) {
                 log.warn("No jcr:content found at: {}", payloadPath);
                 return;
             }
 
-            Node contentNode = session.getNode(jcrContentPath);
-
-            // check node versioning
-            log.info("Log is versioning {}, is node checked out: {}", contentNode.isNodeType(com.day.cq.commons.jcr.JcrConstants.MIX_VERSIONABLE),  !contentNode.isCheckedOut());
-
-            String title = contentNode.hasProperty(JCR_TITLE)
-                    ? contentNode.getProperty(JCR_TITLE).getString()
-                    : "";
+            // 6. Doc title
+            ValueMap props = contentResource.getValueMap();
+            String title = props.get("jcr:title", "");
             log.info("Page title: '{}' at {}", title, payloadPath);
 
             if (!title.toLowerCase().contains("news")) {
-                log.info("Title does not contain 'news', skipping: {}", payloadPath);
+                log.info("Title does not contain 'news', skipping tagging for {}", payloadPath);
                 return;
             }
 
-            // Thêm property demo = "ok"
-            contentNode.setProperty("demo", "ok");
+            // 7. Dung TagManager de ghi tag
+            TagManager tagManager = resolver.adaptTo(TagManager.class);
+            if (tagManager == null) {
+                throw new WorkflowException("Can not obtain TagManager");
+            }
+
+            String newTagId = tagNamespace + "content-type/news";
+            Tag newTag = tagManager.resolve(newTagId);
+            if (newTag == null) {
+                log.warn("News tag not found at: {}", newTagId);
+                return;
+            }
+
+            // Kiem tra tag da ton tai chua
+            Tag[] existingTags = tagManager.getTags(contentResource);
+            boolean alreadyTagged = Arrays.stream(existingTags)
+                    .anyMatch(t -> t.getTagID().equals(newTagId));
+
+            if (alreadyTagged) {
+                log.info("Tag {} already exists, skipping", newTagId);
+                return;
+            }
+
+            // Them tag moi vao danh sach
+            Tag[] updatedTags = Arrays.copyOf(existingTags, existingTags.length + 1);
+            updatedTags[existingTags.length] = newTag;
+            tagManager.setTags(contentResource, updatedTags);
+            log.info("Tagged {} with {}", payloadPath, newTagId);
+
+            // 8. Save session
             session.save();
-            log.info("Added property 'demo=ok' and saved session for {}", payloadPath);
-
+            log.info("Session saved for {}", payloadPath);
+        } catch (LoginException e) {
+            throw new WorkflowException("Cannot obtain ResourceResolver for: " + payloadPath, e);
         } catch (RepositoryException e) {
-            throw new WorkflowException("Failed to process payload: " + payloadPath, e);
+            throw new WorkflowException("Failed to save session for: " + payloadPath, e);
         }
     }
-
-    /**
-     * Using modified value map
-     */
-
-
 }
-
-/*
-public class AutoTagProcessStep implements WorkflowProcess {
-    private static final Logger log = LoggerFactory.getLogger(AutoTagProcessStep.class);
-
-    @Override
-    public void execute(WorkItem workItem,
-                        WorkflowSession workflowSession,
-                        MetaDataMap metaDataMap) throws WorkflowException {
-
-        // 1. Validate payload type
-        String payloadType = workItem.getWorkflowData().getPayloadType();
-        if (!"JCR_PATH".equals(payloadType)) {
-            log.warn("Unsupported payload type: {}", payloadType);
-            return;
-        }
-
-        // 2. Get payload path
-        String payloadPath = workItem.getWorkflowData().getPayload().toString();
-        log.info("Xu ly payload: {}", payloadPath);
-
-        // 3. Read process step args
-        String tagNamespace = metaDataMap.get("PROCESS_ARGS", "mysite:");
-
-        // 4. Access JCR via Workflow Session
-        ResourceResolver resolver = workflowSession.adaptTo(ResourceResolver.class);
-        if (resolver == null) {
-            throw new WorkflowException("Cannot obtain ResourceResolver");
-        }
-
-        Resource contentResource = resolver.getResource(payloadPath + "/jcr:content");
-        if (contentResource == null) {
-            log.warn("No jcr:content found at: {}", payloadPath);
-            return;
-        }
-
-        // 5. Apply business logic
-        ModifiableValueMap properties = contentResource.adaptTo(ModifiableValueMap.class);
-        if (properties == null) {
-            log.warn("Cannot adapt to ModifiableValueMap at: {}", payloadPath);
-            return;
-        }
-
-        boolean changed = false;
-
-        String title = properties.get("jcr:title", "");
-        log.info("Page title: '{}' at {}", title, payloadPath); // thêm dòng này
-
-        if (title.toLowerCase().contains("news")) {
-            String[] existingTags = properties.get("cq:tags", new String[0]);
-            log.info("Existing tags: {}", Arrays.toString(existingTags)); // thêm dòng này
-            String newTag = tagNamespace + "content-type/news";
-
-            if (!Arrays.asList(existingTags).contains(newTag)) {
-                String[] updatedTags = Arrays.copyOf(existingTags, existingTags.length + 1);
-                updatedTags[existingTags.length] = newTag;
-                properties.put("cq:tags", updatedTags);
-                log.info("Tagged {} with {}", payloadPath, newTag);
-                changed = true;
-            } else {
-                log.info("Tag {} already exists, skipping", newTag); // thêm dòng này
-            }
-        }
-
-        if (changed) {
-            try {
-                resolver.commit();
-                log.info("Committed changes for {}", payloadPath); // thêm dòng này
-            } catch (PersistenceException e) {
-                throw new WorkflowException("Failed to commit changes for: " + payloadPath, e);
-            }
-        } else {
-            log.info("No changes to commit for {}", payloadPath); // thêm dòng này
-        }
-    }
-}*/
