@@ -1,0 +1,9 @@
+{
+  "name": "publish",
+  "title": "Publish Distribution Agent",
+  "enabled": true,
+  "packageImporter.endpoints": ["http://localhost:4503/libs/sling/distribution/transport"],
+  "packageBuilder.target": "(name=vlt)",
+  "requestAuthorizationStrategy.target": "(name=noAuthorizationStrategy)",
+  "transportSecretProvider.target": "(name=publishTransportSecretProvider)"
+}
