@@ -36,7 +36,7 @@ import java.util.Calendar;
 public class ArticleContentFragmentModel implements ComponentExporter {
 
     private static final Logger LOG = LoggerFactory.getLogger(ArticleContentFragmentModel.class);
-    static final String RESOURCE_TYPE = "mysite/components/article-detail";
+    static final String RESOURCE_TYPE = "mysite/components/content/article-detail";
     private static final String PN_FRAGMENT_PATH = "fragmentPath";
 
     @ValueMapValue

@@ -12,6 +12,8 @@
 
 - [content fragment integration](content-fragment-impl.md)
 
+- [fix: di chuyen component vao structure/ va content/](fix-component-structure.md)
+
 
 
 

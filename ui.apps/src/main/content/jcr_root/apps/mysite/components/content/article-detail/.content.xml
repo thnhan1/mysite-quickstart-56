@@ -3,5 +3,5 @@
     jcr:primaryType="cq:Component"
     jcr:title="Article Detail"
     jcr:description="Renders full article content from a Content Fragment"
-    componentGroup="MySite - Content"
+    componentGroup="mysite - content"
     sling:resourceSuperType="core/wcm/components/contentfragment/v1/contentfragment"/>
