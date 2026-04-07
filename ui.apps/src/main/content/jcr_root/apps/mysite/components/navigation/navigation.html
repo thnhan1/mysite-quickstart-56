@@ -1,0 +1,23 @@
+<sly data-sly-use.navigation="com.adobe.cq.wcm.core.components.models.Navigation"/>
+<nav class="news-nav" data-sly-test.hasItems="${navigation.items.size > 0}" role="navigation"
+     aria-label="${'nav.home' @ i18n}">
+    <button class="news-nav__toggle" aria-expanded="false" aria-controls="news-nav-menu" aria-label="Menu">
+        <span class="news-nav__toggle-icon"></span>
+    </button>
+    <ul class="news-nav__list" id="news-nav-menu" role="menubar">
+        <sly data-sly-list.item="${navigation.items}">
+            <li class="news-nav__item ${item.children.size > 0 ? 'has-dropdown' : ''} ${item.active ? 'is-active' : ''}" role="none">
+                <a href="${item.URL}" class="news-nav__link" role="menuitem"
+                   title="${item.title}"
+                   aria-haspopup="${item.children.size > 0 ? 'true' : ''}">${item.title}</a>
+                <ul data-sly-test="${item.children.size > 0}" class="news-nav__dropdown" role="menu">
+                    <sly data-sly-list.child="${item.children}">
+                        <li class="news-nav__dropdown-item ${child.active ? 'is-active' : ''}" role="none">
+                            <a href="${child.URL}" class="news-nav__dropdown-link" role="menuitem">${child.title}</a>
+                        </li>
+                    </sly>
+                </ul>
+            </li>
+        </sly>
+    </ul>
+</nav>

@@ -31,7 +31,7 @@ public class ApprovePageContentStep implements ParticipantStepChooser {
         LOG.debug("ApprovePageContentStep: payloadType={}", payloadType);
 
         if (StringUtils.equals(payloadType, "JCR_PATH")) {
-            String path = workItem.getWorkflowData().getPayloadType();
+            String path = workItem.getWorkflowData().getPayload().toString();
             LOG.debug("ApprovePageContentStep: payloadPath={}", path);
 
             if (StringUtils.startsWith(path, CONTENT_PATH)) {

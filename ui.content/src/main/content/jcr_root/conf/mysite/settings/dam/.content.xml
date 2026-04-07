@@ -4,6 +4,7 @@
     <cfm jcr:primaryType="cq:Page">
         <models jcr:primaryType="cq:Page">
             <jcr:content jcr:primaryType="nt:unstructured"/>
+            <article/>
         </models>
     </cfm>
 </jcr:root>

@@ -1,0 +1,24 @@
+<sly data-sly-use.model="com.mysite.core.models.LatestNewsModel"/>
+<section class="latest-news" data-sly-test="${!model.empty}">
+    <h2 class="latest-news__title">${'latest.title' @ i18n}</h2>
+    <div class="latest-news__grid">
+        <sly data-sly-list.article="${model.articles}">
+            <article class="latest-news__card">
+                <a href="${article.url}" class="latest-news__card-link">
+                    <div class="latest-news__card-image-wrapper" data-sly-test="${article.imagePath}">
+                        <img src="${article.imagePath}" alt="${article.title}" class="latest-news__card-image" loading="lazy"/>
+                    </div>
+                    <div class="latest-news__card-body">
+                        <span class="latest-news__card-category" data-sly-test="${article.categoryTitle}">${article.categoryTitle}</span>
+                        <h3 class="latest-news__card-title">${article.title}</h3>
+                        <p class="latest-news__card-summary" data-sly-test="${article.summary}">${article.summary}</p>
+                        <div class="latest-news__card-meta">
+                            <span class="latest-news__card-author" data-sly-test="${article.author}">${article.author}</span>
+                            <time class="latest-news__card-date" data-sly-test="${article.formattedDate}">${article.formattedDate}</time>
+                        </div>
+                    </div>
+                </a>
+            </article>
+        </sly>
+    </div>
+</section>

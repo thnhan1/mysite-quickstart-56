@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        jcr:primaryType="nt:unstructured"
+        jcr:title="Article"
+        jcr:description="Content Fragment Model for news articles"
+        sling:resourceType="dam/cfm/models/editor/components/model"
+        dataTypesConfig="/mnt/overlay/settings/dam/cfm/models/formbuilderconfig"
+        status="enabled">
+        <model
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="wcm/scaffolding/components/scaffolding">
+            <items jcr:primaryType="nt:unstructured">
+                <headline
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="dam/cfm/models/editor/components/datatypeproperties"
+                    fieldLabel="Headline"
+                    name="headline"
+                    metaType="text-single"
+                    required="{Boolean}true"
+                    fieldDescription="Article headline / title"
+                    renderType="textfield"
+                    valueType="string"/>
+                <summary
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="dam/cfm/models/editor/components/datatypeproperties"
+                    fieldLabel="Summary"
+                    name="summary"
+                    metaType="text-multi"
+                    required="{Boolean}true"
+                    fieldDescription="Short description displayed on article cards"
+                    renderType="textarea"
+                    valueType="string"/>
+                <body
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="dam/cfm/models/editor/components/datatypeproperties"
+                    fieldLabel="Body"
+                    name="body"
+                    metaType="text-multi"
+                    required="{Boolean}true"
+                    fieldDescription="Full article body content (rich text)"
+                    renderType="textarea"
+                    cfm-element-multiLine="{Boolean}true"
+                    valueType="string"/>
+                <featuredImage
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="dam/cfm/models/editor/components/datatypeproperties"
+                    fieldLabel="Featured Image"
+                    name="featuredImage"
+                    metaType="content-reference"
+                    required="{Boolean}true"
+                    fieldDescription="Path to the main article image in DAM"
+                    rootPath="/content/dam/mysite"
+                    valueType="string"/>
+                <author
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="dam/cfm/models/editor/components/datatypeproperties"
+                    fieldLabel="Author"
+                    name="author"
+                    metaType="text-single"
+                    required="{Boolean}true"
+                    fieldDescription="Author / journalist name"
+                    renderType="textfield"
+                    valueType="string"/>
+                <publishedDate
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="dam/cfm/models/editor/components/datatypeproperties"
+                    fieldLabel="Published Date"
+                    name="publishedDate"
+                    metaType="date"
+                    required="{Boolean}true"
+                    fieldDescription="Article publication date"
+                    valueType="calendar"/>
+                <category
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="dam/cfm/models/editor/components/datatypeproperties"
+                    fieldLabel="Category"
+                    name="category"
+                    metaType="enumeration"
+                    required="{Boolean}true"
+                    fieldDescription="News category"
+                    valueType="string"
+                    options="[thoi-su=Th&#x1edd;i s&#x1ef1;,the-gioi=Th&#x1ebf; gi&#x1edb;i,kinh-doanh=Kinh doanh,the-thao=Th&#x1ec3; thao,giao-duc=Gi&#xe1;o d&#x1ee5;c,suc-khoe=S&#x1ee9;c kh&#x1ecf;e,du-lich=Du l&#x1ecb;ch,khoa-hoc-cong-nghe=Khoa h&#x1ecd;c &amp; C&#xf4;ng ngh&#x1ec7;]"/>
+            </items>
+        </model>
+    </jcr:content>
+</jcr:root>

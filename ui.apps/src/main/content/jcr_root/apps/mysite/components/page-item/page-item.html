@@ -1,0 +1,16 @@
+<sly data-sly-use.model="com.mysite.core.models.PageItemModel"/>
+<article class="page-item" data-sly-test="${model.title}">
+    <a href="${model.url}" class="page-item__link">
+        <div class="page-item__image-wrapper" data-sly-test="${model.imagePath}">
+            <img src="${model.imagePath}" alt="${model.title}" class="page-item__image" loading="lazy"/>
+        </div>
+        <div class="page-item__content">
+            <h3 class="page-item__title">${model.title}</h3>
+            <p class="page-item__summary" data-sly-test="${model.summary}">${model.summary}</p>
+            <div class="page-item__meta">
+                <span class="page-item__author" data-sly-test="${model.author}">${model.author}</span>
+                <time class="page-item__date" datetime="${model.publishedDate}" data-sly-test="${model.formattedDate}">${model.formattedDate}</time>
+            </div>
+        </div>
+    </a>
+</article>
