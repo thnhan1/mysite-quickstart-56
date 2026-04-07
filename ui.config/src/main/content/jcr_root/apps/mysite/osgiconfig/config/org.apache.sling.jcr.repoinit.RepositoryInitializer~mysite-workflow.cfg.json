@@ -1,0 +1,13 @@
+{
+    "scripts": [
+        "create group reviewers with path /home/groups/mysite\nset properties on authorizable(reviewers)/profile\n  set givenName{String} to \"Article Reviewers\"\nend",
+
+        "create group journalists with path /home/groups/mysite\nset properties on authorizable(journalists)/profile\n  set givenName{String} to \"Journalists\"\nend",
+
+        "create path (sling:OrderedFolder) /var/workflow/models/article-review",
+
+        "set ACL for reviewers\n    allow jcr:read,rep:write on /content/mysite\nend",
+
+        "set ACL for journalists\n    allow jcr:read,rep:write on /content/mysite\nend"
+    ]
+}

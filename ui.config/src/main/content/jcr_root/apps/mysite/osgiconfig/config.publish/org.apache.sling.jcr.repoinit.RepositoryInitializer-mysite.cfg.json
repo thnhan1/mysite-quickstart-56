@@ -1,0 +1,5 @@
+{
+    "scripts": [
+        "create service user mysiteServiceUser with path /home/users/system/mysite\n\nset ACL for mysiteServiceUser\n    allow jcr:read on /content/mysite\n    allow jcr:read on /content/dam/mysite\n    allow jcr:read on /conf/mysite\nend"
+    ]
+}
