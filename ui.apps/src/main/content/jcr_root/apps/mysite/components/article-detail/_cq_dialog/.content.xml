@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
     jcr:primaryType="nt:unstructured"
-    jcr:title="Page Item"
+    jcr:title="Article Detail"
     sling:resourceType="cq/gui/components/authoring/dialog">
     <content
         jcr:primaryType="nt:unstructured"
@@ -14,7 +14,7 @@
                 <items jcr:primaryType="nt:unstructured">
                     <properties
                         jcr:primaryType="nt:unstructured"
-                        jcr:title="Properties"
+                        jcr:title="Article"
                         sling:resourceType="granite/ui/components/coral/foundation/container"
                         margin="{Boolean}true">
                         <items jcr:primaryType="nt:unstructured">
@@ -27,17 +27,14 @@
                                         jcr:primaryType="nt:unstructured"
                                         sling:resourceType="granite/ui/components/coral/foundation/container">
                                         <items jcr:primaryType="nt:unstructured">
-                                            <pagePath
+                                            <fragmentPath
                                                 jcr:primaryType="nt:unstructured"
                                                 sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
-                                                fieldLabel="Article Page"
-                                                fieldDescription="Select the article page to display"
-                                                name="./pagePath"
-                                                rootPath="/content/mysite"/>
-                                            <note
-                                                jcr:primaryType="nt:unstructured"
-                                                sling:resourceType="granite/ui/components/coral/foundation/text"
-                                                text="If the selected page has a 'fragmentPath' property pointing to a Content Fragment, article data will be read from the CF instead of page properties."/>
+                                                fieldLabel="Content Fragment"
+                                                fieldDescription="Path to the Article Content Fragment in DAM"
+                                                name="./fragmentPath"
+                                                required="{Boolean}true"
+                                                rootPath="/content/dam/mysite"/>
                                         </items>
                                     </column>
                                 </items>

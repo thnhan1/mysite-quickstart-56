@@ -1,5 +1,8 @@
 package com.mysite.core.services.impl;
 
+import com.adobe.cq.dam.cfm.ContentElement;
+import com.adobe.cq.dam.cfm.ContentFragment;
+import com.adobe.cq.dam.cfm.FragmentData;
 import com.day.cq.search.PredicateGroup;
 import com.day.cq.search.Query;
 import com.day.cq.search.QueryBuilder;
@@ -9,6 +12,7 @@ import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 import com.mysite.core.models.dto.ArticleItem;
 import com.mysite.core.services.LatestNewsService;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Activate;
@@ -31,6 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LatestNewsServiceImpl implements LatestNewsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(LatestNewsServiceImpl.class);
+    private static final String PN_FRAGMENT_PATH = "fragmentPath";
 
     @ObjectClassDefinition(name = "MySite - Latest News Service Configuration")
     @interface Config {
@@ -114,7 +119,7 @@ public class LatestNewsServiceImpl implements LatestNewsService {
                 if (page == null) {
                     continue;
                 }
-                ArticleItem item = buildArticleItem(page, pageManager);
+                ArticleItem item = buildArticleItem(page, resolver);
                 if (item != null) {
                     results.add(item);
                 }
@@ -125,8 +130,55 @@ public class LatestNewsServiceImpl implements LatestNewsService {
         return results;
     }
 
-    private ArticleItem buildArticleItem(Page page, PageManager pageManager) {
+    private ArticleItem buildArticleItem(Page page, ResourceResolver resolver) {
         ValueMap props = page.getProperties();
+        String cfPath = props.get(PN_FRAGMENT_PATH, String.class);
+
+        if (cfPath != null && !cfPath.isEmpty()) {
+            ArticleItem cfItem = buildFromContentFragment(page, cfPath, resolver);
+            if (cfItem != null) {
+                return cfItem;
+            }
+        }
+
+        return buildFromPageProperties(page, props);
+    }
+
+    private ArticleItem buildFromContentFragment(Page page, String cfPath,
+                                                  ResourceResolver resolver) {
+        Resource cfResource = resolver.getResource(cfPath);
+        if (cfResource == null) {
+            return null;
+        }
+
+        ContentFragment cf = cfResource.adaptTo(ContentFragment.class);
+        if (cf == null) {
+            return null;
+        }
+
+        String title = getElementValue(cf, "headline", String.class);
+        String summary = getElementValue(cf, "summary", String.class);
+        String imagePath = getElementValue(cf, "featuredImage", String.class);
+        String url = page.getPath() + ".html";
+        String author = getElementValue(cf, "author", String.class);
+        Calendar publishedDate = getElementValue(cf, "publishedDate", Calendar.class);
+
+        String categoryTitle = "";
+        Page parent = page.getParent();
+        if (parent != null) {
+            categoryTitle = parent.getTitle();
+        }
+
+        if (title == null || title.isEmpty()) {
+            title = page.getTitle();
+        }
+
+        return new ArticleItem(title, summary != null ? summary : "",
+                              imagePath != null ? imagePath : "", url,
+                              author != null ? author : "", publishedDate, categoryTitle);
+    }
+
+    private ArticleItem buildFromPageProperties(Page page, ValueMap props) {
         String title = props.get("jcr:title", page.getName());
         String summary = props.get("jcr:description", "");
         String imagePath = props.get("image/fileReference", "");
@@ -143,6 +195,23 @@ public class LatestNewsServiceImpl implements LatestNewsService {
 
         return new ArticleItem(title, summary, imagePath, url, author,
                               publishedDate, categoryTitle);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T getElementValue(ContentFragment cf, String elementName, Class<T> type) {
+        ContentElement element = cf.getElement(elementName);
+        if (element == null) {
+            return null;
+        }
+        FragmentData data = element.getValue();
+        if (data == null) {
+            return null;
+        }
+        Object value = data.getValue(type);
+        if (type.isInstance(value)) {
+            return (T) value;
+        }
+        return null;
     }
 
     private static class CacheEntry {

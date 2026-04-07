@@ -2,6 +2,19 @@
 
 > Just do it for fun, not for work.
 
+### April 2026
+
+#### 07/04/2026 (Thursday)
+
+- [implement component, htl, model](phase-1-i18n.md)
+
+- [osgi config](osgi-config.md)
+
+- [content fragment integration](content-fragment-impl.md)
+
+
+
+
 ### March 2026
 
 #### 28/3/2026 (saturday)

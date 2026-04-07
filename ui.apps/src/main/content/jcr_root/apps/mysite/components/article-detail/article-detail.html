@@ -1,0 +1,28 @@
+<sly data-sly-use.model="com.mysite.core.models.ArticleContentFragmentModel"/>
+<article class="article-detail" data-sly-test="${model.resolved}">
+    <header class="article-detail__header">
+        <span class="article-detail__category" data-sly-test="${model.category}">${model.category}</span>
+        <h1 class="article-detail__headline">${model.headline}</h1>
+        <p class="article-detail__summary" data-sly-test="${model.summary}">${model.summary}</p>
+        <div class="article-detail__meta">
+            <span class="article-detail__author" data-sly-test="${model.author}">
+                <span class="article-detail__author-label">${'article.author' @ i18n}:</span> ${model.author}
+            </span>
+            <time class="article-detail__date" datetime="${model.publishedDate}" data-sly-test="${model.formattedDate}">
+                ${model.formattedDate}
+            </time>
+        </div>
+    </header>
+
+    <figure class="article-detail__featured-image" data-sly-test="${model.featuredImage}">
+        <img src="${model.featuredImage}" alt="${model.headline}" class="article-detail__image" loading="eager"/>
+    </figure>
+
+    <div class="article-detail__body">${model.body @ context='html'}</div>
+</article>
+
+<div class="article-detail--empty" data-sly-test="${!model.resolved}">
+    <sly data-sly-test="${wcmmode.edit}">
+        <p>${'article.selectFragment' @ i18n, default='Please select an Article Content Fragment.'}</p>
+    </sly>
+</div>

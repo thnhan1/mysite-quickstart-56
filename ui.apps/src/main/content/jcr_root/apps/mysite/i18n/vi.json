@@ -21,5 +21,6 @@
   "workflow.status.draft": "Nh\u00e1p",
   "workflow.status.pending": "Ch\u1edd duy\u1ec7t",
   "workflow.status.approved": "\u0110\u00e3 duy\u1ec7t",
-  "workflow.status.rejected": "T\u1eeb ch\u1ed1i"
+  "workflow.status.rejected": "T\u1eeb ch\u1ed1i",
+  "article.selectFragment": "Vui l\u00f2ng ch\u1ecdn m\u1ed9t Content Fragment b\u00e0i b\u00e1o."
 }

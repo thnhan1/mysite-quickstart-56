@@ -21,5 +21,6 @@
   "workflow.status.draft": "Draft",
   "workflow.status.pending": "Pending Review",
   "workflow.status.approved": "Approved",
-  "workflow.status.rejected": "Rejected"
+  "workflow.status.rejected": "Rejected",
+  "article.selectFragment": "Please select an Article Content Fragment."
 }
